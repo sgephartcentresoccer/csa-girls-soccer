@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centre Soccer - Girls Travel Program</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- PapaParse for parsing Google Sheet CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            club: {
+              blue: '#0047BB',
+              black: '#000000',
+              dgray: '#4D4D4D',
+              lgray: '#A8B2BD',
+              pink: '#F0458A',
+              white: '#FFFFFF',
+            }
+          },
+          fontFamily: {
+            montserrat: ['Montserrat', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-club-black text-club-white font-inter antialiased min-h-screen p-4 md:p-8">
+
+  <div class="max-w-5xl mx-auto space-y-8">
+    
+    <!-- Main Branding Header -->
+    <header class="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-club-dgray/40 pb-6">
+      <div class="flex items-center gap-5">
+        <img src="images/club-logo.svg" alt="Centre Soccer Logo" class="h-20 md:h-28 w-auto object-contain">
+        <div>
+          <h1 class="font-montserrat font-black uppercase text-3xl md:text-5xl tracking-wider text-club-white">
+            Centre Soccer
+          </h1>
+          <p class="text-sm md:text-base text-club-pink font-montserrat font-bold uppercase tracking-widest mt-1">
+            Girls Travel Program
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <img src="images/girls-with-goals.svg" alt="Girls With Goals" class="h-16 md:h-24 w-auto object-contain">
+      </div>
+    </header>
+
+    <!-- Team Selection Navigation Tabs -->
+    <div class="flex flex-wrap gap-3 border-b border-club-dgray/40 pb-4">
+      <button onclick="switchTeam('u10')" id="tab-u10" class="team-tab bg-club-pink text-club-black font-montserrat font-extrabold px-6 py-3 rounded-lg text-sm md:text-base uppercase tracking-wider transition-all">
+        U10
+      </button>
+      <button onclick="switchTeam('u12_blue')" id="tab-u12_blue" class="team-tab bg-slate-900 text-club-lgray border border-club-dgray/40 hover:text-club-white font-montserrat font-extrabold px-6 py-3 rounded-lg text-sm md:text-base uppercase tracking-wider transition-all">
+        U12 Blue
+      </button>
+      <button onclick="switchTeam('u12_white')" id="tab-u12_white" class="team-tab bg-slate-900 text-club-lgray border border-club-dgray/40 hover:text-club-white font-montserrat font-extrabold px-6 py-3 rounded-lg text-sm md:text-base uppercase tracking-wider transition-all">
+        U12 White
+      </button>
+    </div>
+
+    <!-- Match Cards Container -->
+    <main class="space-y-8">
+      
+      <!-- Section 1: Next Up (Game 1) -->
+      <section id="game-1-card" class="bg-slate-900 border border-club-dgray/40 rounded-xl p-6 md:p-8 space-y-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-club-dgray/30 pb-4 gap-2">
+          <h2 id="g1-title" class="font-montserrat text-2xl md:text-3xl font-black uppercase tracking-wider text-club-white">
+            Next Up
+          </h2>
+          <span class="text-xs font-montserrat uppercase tracking-wider text-club-pink bg-club-pink/10 border border-club-pink/30 px-3 py-1 rounded-full font-bold">
+            Upcoming Game
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 bg-club-black/60 p-5 rounded-lg border border-club-dgray/30">
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Opponent</span>
+            <span id="g1-opponent" class="font-montserrat font-bold text-lg md:text-xl text-club-white">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Date</span>
+            <span id="g1-date" class="font-montserrat font-bold text-lg md:text-xl text-club-white">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Arrival</span>
+            <span id="g1-arrive" class="font-mono font-bold text-lg md:text-xl text-amber-400">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Kickoff</span>
+            <span id="g1-time" class="font-mono font-bold text-lg md:text-xl text-emerald-400">Loading...</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Location</span>
+            <span id="g1-location" class="font-inter font-semibold text-base md:text-lg text-club-white">Loading...</span>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-2">
+          <div class="flex justify-between items-center">
+            <h3 class="font-montserrat text-xl font-bold uppercase tracking-wider text-club-white">Game Roster</h3>
+            <span id="g1-roster-count" class="text-xs text-club-lgray font-mono">0 Players Assigned</span>
+          </div>
+          <div id="g1-roster-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <p class="col-span-full text-club-lgray italic py-4">Loading roster data...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Looking Ahead (Game 2) -->
+      <section id="game-2-card" class="bg-slate-900/80 border border-club-dgray/40 rounded-xl p-6 md:p-8 space-y-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-club-dgray/30 pb-4 gap-2">
+          <h2 id="g2-title" class="font-montserrat text-2xl md:text-3xl font-black uppercase tracking-wider text-club-white">
+            Looking Ahead
+          </h2>
+          <span class="text-xs font-montserrat uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full font-bold">
+            Following Week
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 bg-club-black/60 p-5 rounded-lg border border-club-dgray/30">
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Opponent</span>
+            <span id="g2-opponent" class="font-montserrat font-bold text-lg md:text-xl text-club-white">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Date</span>
+            <span id="g2-date" class="font-montserrat font-bold text-lg md:text-xl text-club-white">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Arrival</span>
+            <span id="g2-arrive" class="font-mono font-bold text-lg md:text-xl text-amber-400">Loading...</span>
+          </div>
+          <div>
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Kickoff</span>
+            <span id="g2-time" class="font-mono font-bold text-lg md:text-xl text-emerald-400">Loading...</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-xs font-montserrat uppercase text-club-lgray tracking-wider">Location</span>
+            <span id="g2-location" class="font-inter font-semibold text-base md:text-lg text-club-white">Loading...</span>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-2">
+          <div class="flex justify-between items-center">
+            <h3 class="font-montserrat text-xl font-bold uppercase tracking-wider text-club-white">Game Roster</h3>
+            <span id="g2-roster-count" class="text-xs text-club-lgray font-mono">0 Players Assigned</span>
+          </div>
+          <div id="g2-roster-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <p class="col-span-full text-club-lgray italic py-4">Loading roster data...</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- JavaScript Google Sheets Bridge -->
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSQeKdcqigzaXpNGnsMPDcE2Iza3WwzkrhJ8cLClm3exYwzW5fiyVKPTLS9bW38TK4RArouewotp10S/pub?output=csv";
+    let allSheetData = [];
+    let currentTeam = "u10";
+
+    function getVal(row, keyName) {
+      if (!row) return "";
+      const matchedKey = Object.keys(row).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
+      return matchedKey ? row[matchedKey].trim() : "";
+    }
+
+    function cleanStr(str) {
+      return (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function loadData() {
+      Papa.parse(CSV_URL, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          allSheetData = results.data;
+          renderCurrentTeam();
+        },
+        error: function(err) {
+          console.error("CSV Load Error:", err);
+        }
+      });
+    }
+
+    function renderMatchSection(prefix, rows) {
+      const oppEl = document.getElementById(`${prefix}-opponent`);
+      const dateEl = document.getElementById(`${prefix}-date`);
+      const arriveEl = document.getElementById(`${prefix}-arrive`);
+      const timeEl = document.getElementById(`${prefix}-time`);
+      const locEl = document.getElementById(`${prefix}-location`);
+      const countEl = document.getElementById(`${prefix}-roster-count`);
+      const gridEl = document.getElementById(`${prefix}-roster-grid`);
+
+      gridEl.innerHTML = "";
+
+      if (!rows || rows.length === 0) {
+        oppEl.innerText = "TBD";
+        dateEl.innerText = "TBD";
+        arriveEl.innerText = "TBD";
+        timeEl.innerText = "TBD";
+        locEl.innerText = "TBD";
+        countEl.innerText = "0 Players Assigned";
+        gridEl.innerHTML = `<p class="col-span-full text-club-lgray py-2 text-sm italic">No match scheduled.</p>`;
+        return;
+      }
+
+      const firstRow = rows[0];
+      oppEl.innerText = getVal(firstRow, "opponent") || "TBD";
+      dateEl.innerText = getVal(firstRow, "date") || "TBD";
+      arriveEl.innerText = getVal(firstRow, "arrive_time") || getVal(firstRow, "arrive") || "TBD";
+      timeEl.innerText = getVal(firstRow, "start_time") || getVal(firstRow, "start") || getVal(firstRow, "kickoff") || "TBD";
+      locEl.innerText = getVal(firstRow, "location") || "TBD";
+
+      const playerNames = rows
+        .map(r => getVal(r, "player_name"))
+        .filter(name => name.length > 0);
+
+      countEl.innerText = `${playerNames.length} Players Assigned`;
+
+      playerNames.forEach((name, index) => {
+        const item = document.createElement("div");
+        item.className = "bg-club-black/70 border border-club-dgray/40 p-3 rounded-lg flex items-center gap-3 font-semibold text-club-white hover:border-club-pink/50 transition-colors";
+        item.innerHTML = `
+          <span class="text-xs font-mono text-club-pink bg-club-pink/10 px-2 py-0.5 rounded border border-club-pink/30 font-bold">${index + 1}</span>
+          <span class="text-sm tracking-wide">${name}</span>
+        `;
+        gridEl.appendChild(item);
+      });
+    }
+
+    function renderCurrentTeam() {
+      const targetClean = cleanStr(currentTeam);
+
+      const teamRows = allSheetData.filter(row => cleanStr(getVal(row, "team")) === targetClean);
+
+      const game1Rows = teamRows.filter(row => getVal(row, "game_number") === "1");
+      const game2Rows = teamRows.filter(row => getVal(row, "game_number") === "2");
+
+      const displayTitle = currentTeam.toUpperCase().replace('_', ' ');
+      document.getElementById("g1-title").innerText = `${displayTitle} - Next Up`;
+      document.getElementById("g2-title").innerText = `${displayTitle} - Looking Ahead`;
+
+      renderMatchSection("g1", game1Rows);
+      renderMatchSection("g2", game2Rows);
+    }
+
+    function switchTeam(teamName) {
+      currentTeam = teamName;
+
+      document.querySelectorAll(".team-tab").forEach(tab => {
+        tab.className = "team-tab bg-slate-900 text-club-lgray border border-club-dgray/40 hover:text-club-white font-montserrat font-extrabold px-6 py-3 rounded-lg text-sm md:text-base uppercase tracking-wider transition-all";
+      });
+
+      const activeTab = document.getElementById(`tab-${teamName}`);
+      if (activeTab) {
+        activeTab.className = "team-tab bg-club-pink text-club-black font-montserrat font-extrabold px-6 py-3 rounded-lg text-sm md:text-base uppercase tracking-wider transition-all";
+      }
+
+      if (allSheetData.length > 0) {
+        renderCurrentTeam();
+      } else {
+        loadData();
+      }
+    }
+
+    // Initial Load
+    loadData();
+  </script>
+
+</body>
+</html>
